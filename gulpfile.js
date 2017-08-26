@@ -1,4 +1,9 @@
 var gulp = require("gulp");
+ 
+// STYLE PROCESS
+gulp.task("styles", function() {
+
+});
 
 
 
