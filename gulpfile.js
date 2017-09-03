@@ -1,5 +1,6 @@
 var gulp = require("gulp");
 var ugligy = require("gulp-uglify");
+var livereload = require("gulp-livereload");
 
 // FOLDER'S PATHS
 const   SCRIPTS_PATH = "public/js/**/*.js",
@@ -14,13 +15,15 @@ gulp.task("styles", function() {
 gulp.task("scripts", function(){ 
     return gulp.src(SCRIPTS_PATH)
             .pipe(ugligy())
-            .pipe(gulp.dest(DIST_PATH+"/js"));
+            .pipe(gulp.dest(DIST_PATH+"/js"))
+            .pipe(livereload());
 });
 
 // WATCH PROCESS
 gulp.task("watch",function() {
     console.log("Starting watch...");
-    var server = require("./server.js");
+    require("./server.js");
+    livereload.listen();
     gulp.watch(SCRIPTS_PATH, ["scripts"])
 });
 
