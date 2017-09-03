@@ -1,5 +1,5 @@
-/build
-/dist
-/dev
-/node_modules
-/sass-cache
+build/
+dist/
+dev/
+node_modules/
+.sass-cache

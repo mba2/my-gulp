@@ -1,1 +1,1 @@
-console.log("aee 2");
+console.log("aee 2.....vamo v c eh bom memo");
