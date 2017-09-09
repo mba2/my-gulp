@@ -2,3 +2,7 @@ h1:before {
     content:"2"; 
     display: inline-block;
 }
+
+div {
+    display: flex;
+}
