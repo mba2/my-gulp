@@ -1,7 +1,8 @@
-var gulp = require("gulp");
-var ugligy = require("gulp-uglify");
-var livereload = require("gulp-livereload");
-var concat = require("gulp-concat");
+var gulp        = require("gulp");
+var ugligy      = require("gulp-uglify");
+var livereload  = require("gulp-livereload");
+var concat      = require("gulp-concat");
+var minifyCSS   = require("gulp-minify-css");
 
 // FOLDER'S PATHS
 const   SCRIPTS_PATH = "public/js/**/*.js",
@@ -11,7 +12,8 @@ const   SCRIPTS_PATH = "public/js/**/*.js",
 // STYLE PROCESS
 gulp.task("styles", function() {
     return gulp.src(CSS_PATH)
-                .pipe(concat("app.css"))
+                .pipe(concat("app.css"))                // CONCATENATES ALL PURE CSS INTO A UNIQUE FILE 
+                .pipe(minifyCSS())                      // MINFY THIS UNIQUE FILE
                 .pipe(gulp.dest(DIST_PATH+"/styles"))
                 .pipe(livereload());
 });
@@ -26,7 +28,6 @@ gulp.task("scripts", function(){
 
 // WATCH PROCESS
 gulp.task("watch",function() {
-    console.log("Starting watch...");
     require("./server.js");
     livereload.listen();
     gulp.watch(SCRIPTS_PATH, ["scripts"]);
