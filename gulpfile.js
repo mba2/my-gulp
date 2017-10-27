@@ -13,7 +13,7 @@ const runSequence   = require('run-sequence');           // MODULE TO CREATE A S
 
 // BUILD CONFIGURATION OPTIONS
 // =============== 
-const SRC_PATH      =  'public';
+const SRC_PATH      =  'src';
 const DEV_PATH      =  'build';
 const DEPLOY_PATH   =  'deploy';
 const PROD_ENV      =  !!$.util.env.production;
@@ -46,7 +46,9 @@ gulp.task('styles', () => {
                 .pipe( gulp.dest( (PROD_ENV) ? DEPLOY_PATH + '/styles'  : DEV_PATH ) );
 });
 
-
+gulp.task('watch', () =>  {
+    gulp.watch(SRC_PATH + '/**/*.{css,scss}', ['styles']);
+});
 
 // DEFAULT TASK
 gulp.task("default",
@@ -54,7 +56,8 @@ gulp.task("default",
                         // console.log($);
                         runSequence(
                             'clean',
-                            'styles'
-                        )
+                            'styles',
+                            'watch'
+                        );
                     }
 );
