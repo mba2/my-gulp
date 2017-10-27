@@ -3,6 +3,9 @@
 const gulp          = require('gulp');                  // MAIN MODULE
 const $             = require('gulp-load-plugins')();   // THIS VARIABLE WILL HOLD ALMOST !!! ALL PLUGINS
 
+const livereload = require('gulp-livereload');
+
+
 // MODULES THAT FAILS TO BE LOADED INTO $ VARIABLE
 // =============== 
 const del           = require('del');                    // MODULE TO DELETE FILES AND FOLDERS
@@ -13,15 +16,27 @@ const runSequence   = require('run-sequence');           // MODULE TO CREATE A S
 
 // BUILD CONFIGURATION OPTIONS
 // =============== 
-const SRC_PATH      =  'src';
-const DEV_PATH      =  'build';
-const DEPLOY_PATH   =  'deploy';
+const PATHS = {
+    src         : '/src',
+    dev         : 'build',
+    deploy      : 'deploy',
+    styles : {
+        src     : 'src/public/styles/**/*.{scss,css}',
+        build   : 'build/public/styles/',
+        deploy  : 'deploy/public/styles/',
+    },    
+    // scripts : {
+    //     src : ,
+    //     build : ,
+    //     deploy : ,
+    // }    
+}
 const PROD_ENV      =  !!$.util.env.production;
 
 // CLEAR PROCESS
 gulp.task('clean',() => {
     return del(
-        (PROD_ENV) ? DEPLOY_PATH : DEV_PATH 
+        (PROD_ENV) ? PATHS.deploy : PATHS.dev 
     );
 });
 
@@ -33,7 +48,7 @@ gulp.task('styles', () => {
     // A CONSTANT TO FILTER  SASS FILES 
     const sassFiles = $.filter(['**/*.scss'],{'restore' : true }); 
     
-    return gulp.src(SRC_PATH + '/**/*.{scss,css}')
+    return gulp.src(PATHS.styles.src)
                 .pipe( $.plumber() )                                          // HANDLING ERRORS
                 .pipe( (PROD_ENV) ? $.sourcemaps.init() : $.util.noop() )     // IN 'PRODUCTION' INITIALIZE SOURCE MAPS               
                 .pipe( $.postcss([cssnext()]) )                               // CSSNEXT(): INSERTS VENDOR PREFIXES IN CSS AND SASS FILES && AUTOPREFIXES BROWSERS VENDORS
@@ -43,12 +58,14 @@ gulp.task('styles', () => {
                 .pipe( (PROD_ENV) ? $.postcss([cssnano()]) : $.util.noop() )  // IN 'PRODUCTION' MODE MINIFY THE STYLES                
                 .pipe( (PROD_ENV) ? $.concat('syles.css') : $.util.noop() )   // IN 'PRODUCTION' CONCATENATES ALL STYLES INTO ONE!               
                 .pipe( (PROD_ENV) ? $.sourcemaps.write()  : $.util.noop() )   // IN 'PRODUCTION' WRITE ALL SOURCE MAPS               
-                .pipe( gulp.dest( (PROD_ENV) ? DEPLOY_PATH + '/styles'  : DEV_PATH ) );
+                .pipe( gulp.dest( (PROD_ENV) ? PATHS.deploy + '/styles'  : PATHS.dev ) );
 });
 
+
 gulp.task('watch', () =>  {
-    gulp.watch(SRC_PATH + '/**/*.{css,scss}', ['styles']);
+    gulp.watch(PATHS.styles.src, ['styles']);
 });
+    
 
 // DEFAULT TASK
 gulp.task("default",
@@ -56,8 +73,8 @@ gulp.task("default",
                         // console.log($);
                         runSequence(
                             'clean',
-                            'styles',
-                            'watch'
+                            'styles'
                         );
+                        if( !PROD_ENV) runSequence('watch');
                     }
 );
